@@ -13,6 +13,11 @@ $Bundles = @(
   @{ Name='Sabotaj_UE421_Galata_Project.zip.aes256'; Project='Sabotaj'; Sha='5880994B9E183E4B213128376D6AEC76C6D0635CA7478282C77F358C28ACD61B' },
   @{ Name='Sabotaj_UE421_Saved.zip.aes256'; Project='Sabotaj'; Sha='E016374F762A56FBEDBF90BADFBD6C2876FA7350F92B2662AD7D82E008D90690' }
 )
+$PrivateRelative = 'ENCRYPTED_PRIVATE\PRIVATE_UE_RECOVERY_NOTES.zip.aes256'
+if (Test-Path -LiteralPath (Join-Path $Here $PrivateRelative) -PathType Leaf) {
+  $Bundles += @{ Name=$PrivateRelative; Project='Sabotaj_Recovery_Notes'; Sha='3ACFE59FAE77E99743449D18C9F4B917CAAF5A6A7E6DD29BDD0B899183FA816A' }
+  Write-Host 'Arquivo de anotacoes privadas encontrado: sera restaurado separadamente.'
+}
 $OpenSSL = (Get-Command openssl.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source)
 if (-not $OpenSSL) {
   $GitSSL = 'C:\Program Files\Git\mingw64\bin\openssl.exe'
@@ -28,7 +33,7 @@ foreach ($Bundle in $Bundles) {
   if ($Actual -ne $Bundle.Sha) { throw ('Falha SHA-256: '+$Bundle.Name) }
   Write-Host ('OK: '+$Bundle.Name)
 }
-foreach ($Name in @('SINGULARITY','Sabotaj')) {
+foreach ($Name in @('SINGULARITY','Sabotaj','Sabotaj_Recovery_Notes')) {
   $Dir = Join-Path $DestinationRoot $Name
   if ((Test-Path $Dir) -and @(Get-ChildItem -LiteralPath $Dir -Force -ErrorAction SilentlyContinue).Count -gt 0) {
     throw ('A pasta destino ja existe e nao esta vazia: '+$Dir+'. Selecione outra raiz com -DestinationRoot.')
