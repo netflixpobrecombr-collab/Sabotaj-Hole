@@ -1,28 +1,52 @@
-# Como restaurar o SINGULARITY e o Sabotaj no novo PC
+# Restaurar SINGULARITY UE5.8 e Sabotaj UE4.21
 
-**Estado: restauração incompleta. NÃO FORMATAR O PC ORIGINAL ainda.** Este repositório contém apenas parte do trabalho.
+**Estado:** os arquivos essenciais dos **dois projetos Unreal foram publicados criptografados** e os pacotes passaram em teste de restauração no PC original em 09/11/2026.
 
-## SINGULARITY (Unreal Engine 5.8)
+## 1. Preparar o computador de destino
 
-1. Clone este repositório e copie a subpasta `SINGULARITY/` para uma pasta de projetos Unreal no novo computador.
-2. Os arquivos `SINGULARITY.uproject`, `Source/`, `Config/` e parte de `Content/` estão preservados, mas **nem todos os assets binários**.
-3. Extraia `Archives/SINGULARITY_ExternalActors_Objects.zip` **dentro da pasta `Content/`**, permitindo a criação de `Content/__ExternalActors__` e `Content/__ExternalObjects__`. Não extraia o ZIP na raiz do projeto.
-4. Instale a Unreal Engine **5.8** compatível, a toolchain C++/Visual Studio e os plugins exigidos pelo `.uproject`. O código C++ atual está em `Source/SINGULARITY/`.
-5. **Antes de abrir o projeto, restaure separadamente** os recursos ainda ausentes em `Content/`, `SourceAssets/`, e quaisquer dependências/licenças aplicáveis. Os arquivos recuperados do Sabotaj não foram publicados aqui.
-6. O histórico original da pasta `.git` também não foi integralmente migrado; os arquivos publicados são uma fotografia da árvore de trabalho, não uma reprodução completa dos commits locais.
+Instale **Unreal Engine 5.8** para SINGULARITY e **Unreal Engine 4.21** para o projeto Sabotaj, mais Visual Studio / compiladores C++ e plugins exigidos pelos descritores `.uproject`.
 
-## Sabotaj reconstruído (Unreal Engine 4.21)
+Instale Git for Windows, que inclui `openssl.exe`, e use o `tar.exe` do Windows.
 
-1. Existe um esqueleto em `Sabotaj-UE4/` contendo `Sabotaj.uproject`, configurações básicas e scripts.
-2. **Faltam** os diretórios de recursos do UE4 (`Content/`, incluindo Galata, Blueprints, armas e mapas), o conjunto completo de assets extraídos, bem como os arquivos grandes da recuperação.
-3. Esse esqueleto **não é jogável nem substitui a cópia que ainda está no PC original**.
+## 2. Obter o backup
 
-## Segurança e integridade
+1. Abra a [Release UE4 + UE5](https://github.com/netflixpobrecombr-collab/Sabotaj-Hole/releases/tag/ue4-ue5-restorable-20261109).
+2. Baixe os **cinco arquivos `.zip.aes256`** e o `SHA256SUMS.txt`.
+3. Obtenha este repositório (clonar ou baixar ZIP). Coloque os seis arquivos baixados **na mesma pasta** que contém `RESTORE_UE4_UE5.ps1`.
+4. Tenha a senha privada de restauração guardada em local seguro; **ela não está no GitHub**.
+5. Opcional: o arquivo `ENCRYPTED_PRIVATE/PRIVATE_UE_RECOVERY_NOTES.zip.aes256` também é processado pelo script se permanecer na subpasta `ENCRYPTED_PRIVATE` ao lado dele.
 
-- O arquivo `SINGULARITY/HANDOFF_PUBLIC.md` é uma versão sanitizada de referência; o original local não foi enviado.
-- Os arquivos binários que constam no GitHub tiveram seus identificadores de blob Git comparados aos arquivos locais após o upload.
-- SHA-256 do ZIP dos atores externos: `FAE2CF470F7ECC6959BDD19AC6E2C58D453CBC723DA6F9C77A8EDCA2FCE4FFBF`.
-- **Chaves AES, credenciais e arquivos privados não foram enviados ao repositório público**. Guardar esses elementos em local seguro, criptografado e verificável antes de formatar o PC é indispensável.
-- Uma restauração completa exige testar o projeto em uma máquina diferente antes de apagar a original.
+## 3. Executar o script
 
-Consulte `MIGRATION_STATUS.md` para o inventário publicado e o que ainda falta.
+No PowerShell, estando na pasta que contém o script:
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\RESTORE_UE4_UE5.ps1
+```
+
+O script:
+- valida o SHA-256 dos pacotes antes de qualquer extração;
+- pede a senha privada sem exibi-la na tela;
+- descriptografa os pacotes e extrai os dois projetos para `Documents\Unreal Projects\SINGULARITY` e `Documents\Unreal Projects\Sabotaj`;
+- bloqueia sobrescrita se as pastas de destino estiverem ocupadas;
+- verifica a presença dos dois arquivos `.uproject`.
+
+Se necessário, escolha uma pasta vazia de destino:
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\RESTORE_UE4_UE5.ps1 -DestinationRoot 'D:\Unreal Projects'
+```
+
+## 4. Conferir Unreal e Galata
+
+- Abra `SINGULARITY.uproject` com UE5.8. Verifique `Content/Maps/Lvl_Galata.umap`, o mapa, materiais, malhas, Blueprints e a compilação C++.
+- Abra `Sabotaj.uproject` com UE4.21. Confirme o Galata em `Content/GalataRealAtlas/`, mapas e Blueprints. Teste a jogabilidade.
+- Os diretórios `Intermediate` e `DerivedDataCache` não foram incluídos porque podem ser gerados outra vez. A inicialização ou compilação inicial pode demorar.
+
+## Integridade, segurança e limites
+
+Os cinco arquivos somam **3,50 GB** criptografados e seus hashes são publicados pelo GitHub. Um teste local em 09/11/2026 restaurou **1.662 arquivos UE5 + 1.088 arquivos UE4**, sem diferenças de inventário ou tamanho em relação às fontes, excluindo apenas caches. O teste não incluiu rodar os projetos no editor.
+
+**ANTES DE FORMATAR:** a senha está no PC original em `C:\Users\Henrique\Tools\_projetos\Sabotaj\_work\MigrationUE_20261109\SENHA_PRIVADA_NAO_ENVIAR.txt`. Guarde-a em outro local privado seguro. Nunca publique a senha ou chaves AES no GitHub público.
+
+O backup cobre os dois **projetos Unreal**, não os ~69 GiB de arquivos brutos originais do Sabotaj nem instalações de software.
