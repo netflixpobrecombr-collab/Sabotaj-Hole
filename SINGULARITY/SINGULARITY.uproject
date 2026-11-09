@@ -1,0 +1,45 @@
+{
+    "FileVersion":  3,
+    "EngineAssociation":  "5.8",
+    "Category":  "Games",
+    "Description":  "SINGULARITY - FPS tatico original da Black Hole Studio",
+    "Plugins":  [
+                    {
+                        "Name":  "EnhancedInput",
+                        "Enabled":  true
+                    },
+                    {
+                        "Name":  "Niagara",
+                        "Enabled":  true
+                    },
+                    {
+                        "Name":  "ControlRig",
+                        "Enabled":  true
+                    },
+                    {
+                        "TargetAllowList":  [
+                                                "Editor"
+                                            ],
+                        "Name":  "ModelingToolsEditorMode",
+                        "Enabled":  true
+                    },
+                    {
+                        "Name":  "GameplayStateTree",
+                        "Enabled":  true
+                    },
+                    {
+                        "TargetAllowList":  [
+                                                "Editor"
+                                            ],
+                        "Name":  "PythonScriptPlugin",
+                        "Enabled":  true
+                    }
+                ],
+    "Modules":  [
+                    {
+                        "Name":  "SINGULARITY",
+                        "Type":  "Runtime",
+                        "LoadingPhase":  "Default"
+                    }
+                ]
+}
