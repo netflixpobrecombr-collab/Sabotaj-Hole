@@ -1,0 +1,9 @@
+name: Migration capability check
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm runner
+        run: echo 'Migration workflow setup ready'
