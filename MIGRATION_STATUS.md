@@ -2,41 +2,52 @@
 
 Destino: https://github.com/netflixpobrecombr-collab/Sabotaj-Hole
 
-## Transferência REAL e verificada
+## Projetos Unreal: pacotes publicados e restauração de teste validada
 
-**Checkpoint do repositório:** commit `a742c426f7abe8a3ea31f82d7db1e694523492c9`.
-Na conferência da árvore remota, havia **106 arquivos de conteúdo Git**, somando **4.256.659 bytes** de payload (não contar metadados Git). A migração segue PARCIAL: esses megabytes não substituem os aproximadamente 80 GiB encontrados no computador.
+**Release:** https://github.com/netflixpobrecombr-collab/Sabotaj-Hole/releases/tag/ue4-ue5-restorable-20261109
 
-### SINGULARITY / Unreal Engine 5.8
+| Pacote criptografado | Bytes |
+| --- | ---: |
+| SINGULARITY_UE58_Project.zip.aes256 | 761.802.432 |
+| SINGULARITY_UE58_Saved.zip.aes256 | 892.784.592 |
+| SINGULARITY_UE58_Binaries.zip.aes256 | 254.087.296 |
+| Sabotaj_UE421_Galata_Project.zip.aes256 | 1.150.403.616 |
+| Sabotaj_UE421_Saved.zip.aes256 | 445.710.944 |
+| **Total** | **3.504.788.880** |
 
-- `SINGULARITY/SINGULARITY.uproject`
-- `SINGULARITY/Source/`: 20 arquivos C++ e de compilação, incluindo alterações que estavam na árvore de trabalho local
-- `SINGULARITY/Config/`: cinco arquivos de configuração
-- `SINGULARITY/Content/`: **55 arquivos individuais**, incluindo mapa `Maps/Lvl_Galata.umap`, ações Enhanced Input, Blueprint do personagem, PlayerController, GameMode, câmera, animações, materiais, shaders, malhas, protótipos interativos e controles touch
-- `SINGULARITY/Archives/SINGULARITY_ExternalActors_Objects.zip`: ZIP de 141.713 bytes com **64 arquivos** do conteúdo de atores/objetos externos (84 entradas incluindo pastas). SHA-256: `FAE2CF470F7ECC6959BDD19AC6E2C58D453CBC723DA6F9C77A8EDCA2FCE4FFBF`
-- `SINGULARITY/HANDOFF_PUBLIC.md`: versão de referência sanitizada do handoff; **não** é a cópia local completa
+O GitHub informa os hashes SHA-256 de cada pacote. **Todos os cinco hashes foram comparados ao arquivo original no PC e corresponderam.**
 
-Os arquivos binários enviados foram transformados em blobs Git com conteúdo exato; seus SHA de blob foram comparados aos hashes `git hash-object` locais antes de criar os commits.
+### O que foi preservado
 
-### Sabotaj / Unreal Engine 4.21
+- **SINGULARITY (UE5.8):** `SINGULARITY.uproject`, `Content/`, `Source/`, `SourceAssets/`, `Scripts/`, `Build/`, `Config/`, `Backups/`, `Reports/`, `Saved/`, `Binaries/`, histórico local `.git/`, `HANDOFF.md` e outros arquivos da raiz. Os recursos do Galata e das armas dentro dessas pastas foram incluídos.
+- **Sabotaj (UE4.21):** `Sabotaj.uproject`, `Content/` (incluindo `GalataRealAtlas/Galata_textured.uasset`, mapas, Blueprints e outros recursos), `Config/` e `Saved/`.
+- **Recuperação privada:** `ENCRYPTED_PRIVATE/PRIVATE_UE_RECOVERY_NOTES.zip.aes256` no Git; criptografado. Senha não publicada.
 
-- `Sabotaj-UE4/Sabotaj.uproject`
-- `Sabotaj-UE4/Config/`: quatro arquivos de configuração
-- `Sabotaj-UE4/Tools/`: 13 scripts de recuperação, exportação e construção de mapas, inclusive o atlas real do Galata
-- Não foram publicados mapas/meshes/texturas recuperados nem a configuração secreta do jogo original.
+Somente os arquivos dentro de `Intermediate/` e `DerivedDataCache/` foram omitidos dos projetos, pois são geráveis novamente.
 
-## AINDA NÃO enviado — permanece somente no PC
+### Teste efetivo de restauração no PC original
 
-- **UE5 SINGULARITY:** muitos dos assets do `Content/` (incluindo Mannequins, Galata texturizado, referências do protótipo); a pasta `SourceAssets/` com FBX e imagens; backups locais e histórico completo de `.git`; caches e binários de build (os últimos geralmente são regeneráveis).
-- **UE4 Sabotaj:** diretório `Content/` (cerca de 1,64 GiB de mapas, Blueprints, malhas, armas e materiais). O mapa real-texturizado `Galata_textured.uasset` e o `FirstPersonExampleMap.umap` jogável **não estão aqui**.
-- **Recuperação do Sabotaj:** diretório `C:\Users\Henrique\Tools\_projetos\Sabotaj` de cerca de **69,01 GiB**, incluindo assets extraídos, exports, `.pak`, `.rar`, projetos auxiliares e ferramentas. Há arquivos individuais superiores aos limites típicos de arquivos em repositórios Git.
-- **Segurança:** `HANDOFF.md` completo com referências de recuperação, arquivos de chave AES e credenciais não foram enviados ao GitHub público.
-- **Ambiente:** instalações locais do Unreal Engine 4.21 / 5.8, plugins, programas e toolchains não foram migrados.
+Em 09/11/2026:
+1. Os cinco pacotes foram descriptografados com a senha privada e comparados byte a byte aos ZIPs de origem pelo SHA-256.
+2. Os cinco ZIPs foram extraídos em pasta de teste independente.
+3. O inventário de arquivos restaurados foi comparado ao inventário original, excluindo apenas os caches especificados:
+   - UE5: **1.662 esperados / 1.662 restaurados / 0 ausentes / 0 tamanhos divergentes**.
+   - UE4: **1.088 esperados / 1.088 restaurados / 0 ausentes / 0 tamanhos divergentes**.
+4. Sete arquivos essenciais tiveram hashes SHA-256 iguais aos correspondentes originais, incluindo os arquivos `.uproject`, `Lvl_Galata.umap`, `Galata_textured.uasset` e `Galata_textured.fbx`.
+5. A pasta temporária de teste foi removida após validação; o relatório local está em `MigrationUE_20261109/VALIDATION_REPORT.txt`.
 
-## RESTAURAÇÃO
+**Limite do teste:** não houve confirmação de abertura e jogabilidade dos dois projetos nos respectivos Unreal Editors em um PC novo. A restauração de arquivos foi verificada.
 
-Veja `RESTORE_INSTRUCTIONS.md` para os passos de extração e implantação parcial no novo PC.
+### Código Git e arquivos menores
 
-> **NÃO FORMATE O COMPUTADOR AINDA.** O repositório é uma cópia verificada de alguns arquivos e NÃO é uma restauração completa dos projetos. Para não perder mapas e dados secretos, os recursos ausentes precisam ser guardados em um destino externo seguro e uma restauração real precisa ser testada.
+Na verificação mais recente, o ramo `main` continha 110 arquivos Git de documentação, scripts, código e parte de `Content/`. Os recursos completos estão na **Release criptografada**, e não como arquivos individuais na árvore Git.
 
-Este arquivo contém metadados de migração; nenhum segredo, senha, token ou chave AES.
+### Requisito antes de formatar
+
+**A senha de restauração está somente no PC original até ser salva em outro local seguro.** Caminho:
+
+`C:\Users\Henrique\Tools\_projetos\Sabotaj\_work\MigrationUE_20261109\SENHA_PRIVADA_NAO_ENVIAR.txt`
+
+**Não formate até salvar essa senha fora do computador.** Recomenda-se também testar a abertura dos projetos em Unreal Engine 5.8 e 4.21 antes de apagar a fonte.
+
+Os aproximadamente 69 GiB de arquivos brutos e instalações do Sabotaj **não** estão inclusos neste backup, conforme o escopo restrito aos dois projetos Unreal.
