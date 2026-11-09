@@ -1,0 +1,66 @@
+name: Transfer encrypted UE4 and UE5 projects
+on:
+  push:
+    paths:
+      - .github/workflows/transfer-ue-bundles.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: transfer-ue-projects-20261109
+  cancel-in-progress: false
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ROOT_URL: https://twin-grey-victoria-florida.trycloudflare.com
+      REL_TAG: ue4-ue5-restorable-20261109
+    steps:
+      - name: Download encrypted archives (resumable)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p migration
+          cd migration
+          cat > SHA256SUMS.txt <<'END_OF_SHA256'
+          5880994b9e183e4b213128376d6aec76c6d0635ca7478282c77f358c28acd61b  Sabotaj_UE421_Galata_Project.zip.aes256
+          e016374f762a56fbedbf90badfbd6c2876fa7350f92b2662ad7d82e008d90690  Sabotaj_UE421_Saved.zip.aes256
+          5a6b7d50c914e05a753bd6b7c578dc1018845594061d6a25f1d4598ad48b4770  SINGULARITY_UE58_Binaries.zip.aes256
+          9fc6bba7ad912bd33f999d0e8c8577a7da22b7d638ca3226129e2912e0efe89f  SINGULARITY_UE58_Project.zip.aes256
+          27fab593d7a859b656438595e05c73d4e03d6d84a26a375a6ac3606a95561b29  SINGULARITY_UE58_Saved.zip.aes256
+          END_OF_SHA256
+          while read -r digest filename; do
+            echo "Downloading $filename"
+            success=0
+            for attempt in {1..20}; do
+              if curl --fail --location --silent --show-error --retry 2 --retry-all-errors --connect-timeout 30 --speed-time 120 --speed-limit 1024 -C - --output "$filename" "$ROOT_URL/$filename"; then
+                success=1
+                break
+              fi
+              echo "Retry $attempt for $filename"
+              sleep 5
+            done
+            if [ "$success" != "1" ]; then echo "Download failed: $filename"; exit 1; fi
+            echo "$digest  $filename" | sha256sum --check --status
+            echo "SHA-256 verified: $filename"
+          done < SHA256SUMS.txt
+          sha256sum --check SHA256SUMS.txt
+      - name: Upload checked files to draft GitHub Release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd migration
+          if ! gh release view "$REL_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$REL_TAG" --repo "$GITHUB_REPOSITORY" --draft --title 'UE4 + UE5 — arquivos criptografados (09-11-2026)' --notes 'Projetos UE4/UE5 migrados em 5 partes criptografadas. Chave de restauração NÃO está neste repositório. Intermediate e DerivedDataCache são caches regeneráveis e foram omitidos. Não formatar antes de confirmar a restauração.'
+          fi
+          gh release upload "$REL_TAG" ./*.aes256 SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
+          for f in *.aes256; do
+            expected=$(stat --format='%s' "$f")
+            actual=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$REL_TAG" --jq ".assets[] | select(.name == \"$f\") | .size")
+            if [ "$expected" != "$actual" ]; then echo "Remote size mismatch for $f (expected=$expected actual=$actual)"; exit 1; fi
+            echo "Remote asset confirmed: $f bytes=$actual"
+          done
+          gh release edit "$REL_TAG" --repo "$GITHUB_REPOSITORY" --draft=false
+          echo "RELEASE_PUBLISHED=https://github.com/$GITHUB_REPOSITORY/releases/tag/$REL_TAG"
