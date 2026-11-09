@@ -52,15 +52,16 @@ jobs:
         run: |
           set -euo pipefail
           cd migration
-          if ! gh release view "$REL_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create "$REL_TAG" --repo "$GITHUB_REPOSITORY" --draft --title 'UE4 + UE5 — arquivos criptografados (09-11-2026)' --notes 'Projetos UE4/UE5 migrados em 5 partes criptografadas. Chave de restauração NÃO está neste repositório. Intermediate e DerivedDataCache são caches regeneráveis e foram omitidos. Não formatar antes de confirmar a restauração.'
+          draftid=$(gh api "repos/$GITHUB_REPOSITORY/releases" --jq ".[] | select(.draft == true and .tag_name == \"$REL_TAG\") | .id" | head -n1)
+          if [ -n "$draftid" ]; then
+            echo "Removing orphaned draft release $draftid before verified republish"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$draftid" >/dev/null
           fi
-          gh release upload "$REL_TAG" ./*.aes256 SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
+          gh release create "$REL_TAG" ./*.aes256 SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --title 'UE4 + UE5 — arquivos criptografados (09-11-2026)' --notes 'Projetos UE4/UE5 migrados em 5 partes criptografadas. Chave de restauração NÃO está neste repositório. Intermediate e DerivedDataCache são caches regeneráveis e foram omitidos. Não formatar antes de confirmar a restauração.'
           for f in *.aes256; do
             expected=$(stat --format='%s' "$f")
             actual=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$REL_TAG" --jq ".assets[] | select(.name == \"$f\") | .size")
             if [ "$expected" != "$actual" ]; then echo "Remote size mismatch for $f (expected=$expected actual=$actual)"; exit 1; fi
             echo "Remote asset confirmed: $f bytes=$actual"
           done
-          gh release edit "$REL_TAG" --repo "$GITHUB_REPOSITORY" --draft=false
           echo "RELEASE_PUBLISHED=https://github.com/$GITHUB_REPOSITORY/releases/tag/$REL_TAG"
