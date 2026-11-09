@@ -1,0 +1,32 @@
+# Unreal Engine generated files (recreated as needed)
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.VC.db
+*.VC.opendb
+*.user
+*.userprefs
+
+# Backups and development evidence remain local; Git history protects source/assets.
+Backups/
+Reports/*.log
+Reports/*.umap
+Reports/*_backup*.cpp
+Reports/*_v1_10checks.cpp
+Reports/*_full.png
+Reports/Galata_UE5_editor_printwindow.png
+Build/Windows/FileOpenOrder/*.log
+
+# OS noise
+Thumbs.db
+.DS_Store
+
+# Recovered third-party references: local evaluation ONLY, never included in git builds/pushes.
+SourceAssets/ReferencesOnly/
+Content/PrototypeReferences/
