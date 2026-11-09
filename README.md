@@ -1,18 +1,30 @@
 # Sabotaj-Hole — Black Hole Studio
 
-Migração de desenvolvimento de **SINGULARITY (Unreal Engine 5.8)** e **Sabotaj reconstruído (Unreal Engine 4.21)** para trocar ou formatar o computador de origem.
+Backup e migração dos projetos **SINGULARITY (Unreal Engine 5.8)** e **Sabotaj reconstruído (Unreal Engine 4.21)**.
 
-## Conteúdo já preservado
+## Backup integral dos dois projetos
 
-- [SINGULARITY](SINGULARITY/): código C++, configuração, mapa `Lvl_Galata`, Blueprints de FPS, materiais, malhas, atores de teste e outros assets UE5
-- [Atores externos do SINGULARITY](SINGULARITY/Archives/SINGULARITY_ExternalActors_Objects.zip): ZIP de estruturas do nível (veja instruções de extração)
-- [Sabotaj UE4](Sabotaj-UE4/): descritor `.uproject`, configuração e 13 scripts de tratamento de mapas, incluindo atlas real do Galata
-- [HANDOFF público do SINGULARITY](SINGULARITY/HANDOFF_PUBLIC.md): resumo sanitizado, sem segredos
-- [Estado da migração](MIGRATION_STATUS.md): inventário de arquivos verificados e pendências
-- [Como restaurar](RESTORE_INSTRUCTIONS.md): instruções para reconstituir parte do ambiente
+Os recursos de desenvolvimento dos dois projetos estão publicados **criptografados** na [Release UE4 + UE5 de 09/11/2026](https://github.com/netflixpobrecombr-collab/Sabotaj-Hole/releases/tag/ue4-ue5-restorable-20261109), com cinco pacotes somando **3.504.788.880 bytes (3,50 GB)**.
 
-## AVISO MUITO IMPORTANTE
+- UE5: projeto com `Content`, `Source`, `SourceAssets`, `Scripts`, `Config`, `Build`, `Reports`, `Backups`, `.git` local e `HANDOFF.md`; mais `Saved` e `Binaries` em pacotes separados.
+- UE4: `Sabotaj.uproject`, `Config` e `Content` (incluindo o Galata texturizado); mais `Saved` em pacote separado.
+- As únicas pastas omitidas foram `Intermediate` e `DerivedDataCache` (caches regeneráveis).
 
-**A migração está incompleta — NÃO FORMATE O PC ORIGINAL.** Na última verificação da árvore Git havia 106 arquivos de conteúdo publicados (cerca de 4,26 MB), mas os projetos/extrações locais somavam dezenas de GiB. Faltam vários arquivos essenciais de `Content/`, `SourceAssets/`, arquivos de recuperação e recursos grandes. O repositório ainda NÃO é um backup completo nem abre os dois projetos de forma independente.
+**Validação de 09/11/2026:** os cinco pacotes criptografados têm hashes SHA-256 idênticos aos publicados pelo GitHub. Foram descriptografados e extraídos com sucesso no PC original; **2.750 arquivos** restaurados foram comparados com o inventário original, sem ausências nem diferenças de tamanho. Arquivos essenciais também tiveram o SHA-256 comparado individualmente.
 
-**Nenhuma chave AES ou credencial deve ser publicada em texto aberto neste repositório público.** Os arquivos originais permanecem no computador até serem guardados em um destino apropriado e uma restauração ser verificada.
+**Importante:** essa foi uma validação de backup/restauração de arquivos. Abrir os projetos e testar a jogabilidade em um editor Unreal instalado ainda é uma verificação adicional recomendada.
+
+## Conteúdo acessível diretamente no Git
+
+- [SINGULARITY](SINGULARITY/): parte do código C++, configurações e recursos individuais
+- [Atores externos do SINGULARITY](SINGULARITY/Archives/SINGULARITY_ExternalActors_Objects.zip)
+- [Esqueleto e scripts do UE4](Sabotaj-UE4/)
+- [Estado e verificação da migração](MIGRATION_STATUS.md)
+- [Instruções de restauração](RESTORE_INSTRUCTIONS.md)
+- [Script de recuperação](RESTORE_UE4_UE5.ps1)
+
+## Antes de formatar o PC de origem
+
+**Guarde a senha privada da restauração FORA do computador que será formatado.** Ela não foi publicada no repositório nem incluída nos pacotes. No PC de origem, está em `C:\Users\Henrique\Tools\_projetos\Sabotaj\_work\MigrationUE_20261109\SENHA_PRIVADA_NAO_ENVIAR.txt`. Transfira-a para um gerenciador de senhas ou outro local pessoal seguro. Sem ela, não será possível abrir os arquivos criptografados.
+
+O repositório é público: **não publique a senha, chaves AES ou credenciais em texto aberto.** O backup **não inclui** os ~69 GiB de arquivos brutos e instalações originais de Sabotaj mantidos fora dos dois projetos Unreal.
