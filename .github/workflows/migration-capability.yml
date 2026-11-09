@@ -1,5 +1,8 @@
 name: Migration capability check
 on:
+  push:
+    paths:
+      - .github/workflows/migration-capability.yml
   workflow_dispatch:
 jobs:
   check:
